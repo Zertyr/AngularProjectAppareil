@@ -1,42 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { AppareilService } from './services/appareil.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
+import { interval } from 'rxjs';
+import 'rxjs/Rx';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
-  isAuth = false;
-  lastUpdate = new Promise<Date>((resolve, reject) => {
-    const date = new Date();
-    setTimeout(
-      () => {
-        resolve(date);
-      }, 2000
+  isAuth: boolean;
+  secondes: number;
+  counterSubscription: Subscription;
+
+ constructor(private authService: AuthService){
+
+ }
+
+ ngOnInit() {
+     const counter = interval(1000);
+     this.counterSubscription = counter.subscribe(
+       (value: number) => {
+         this.secondes = value;
+      }
     );
-  });
+ }
 
-  appareils: any[];
 
-  constructor(private appareilService: AppareilService) {
-    setTimeout(
-      () => {
-        this.isAuth = true;
-      }, 4000
-    );
-  }
-
-  ngOnInit(){
-    this.appareils = this.appareilService.appareils;
-  }
-
-  onAllumer() {
-    this.appareilService.switchOnAll();
-  }
-
-  onEteindre(){
-    this.appareilService.switchOffAll();
-  }
+ ngOnDestroy() {
+   this.counterSubscription.unsubscribe();
+ }
 }
