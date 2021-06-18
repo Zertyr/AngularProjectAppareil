@@ -14,6 +14,7 @@ export class AppareilService {
   constructor(private httpClient: HttpClient) { }
 
   emitAppareilSubject(){
+    // on extrait tout les appareils pour les passer dans le tableau subject
     this.appareilSubject.next(this.appareils.slice());
   }
   getAppareilById(id: number){
